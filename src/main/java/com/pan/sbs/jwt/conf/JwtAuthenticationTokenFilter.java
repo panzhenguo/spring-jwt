@@ -1,5 +1,6 @@
 package com.pan.sbs.jwt.conf;
 
+import com.pan.sbs.jwt.service.AuthService;
 import com.pan.sbs.jwt.utils.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,32 +43,18 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
+    @Autowired
+    private AuthService authService;
+
     @Override
     protected void doFilterInternal( HttpServletRequest request, HttpServletResponse response,FilterChain chain) throws ServletException, IOException {
+
         String authHeader = request.getHeader(this.tokenHeader);
-
-
-        String token = request.getHeader("token");
-
-
-        System.out.println(token);
-        String usernameFromToken = jwtTokenUtil.getUsernameFromToken(token);
-        System.out.println(usernameFromToken);
-
-        System.out.println("authHeader ："+authHeader);
         if (authHeader != null && authHeader.startsWith(tokenHead)) {
-            System.out.println("tokenHead : "+tokenHead);
+
             final String authToken = authHeader.substring(tokenHead.length());
-            System.out.println("authToken ："+authToken);
 
             String username = jwtTokenUtil.getUsernameFromToken(authToken);
-
-            System.out.println("username :"+username);
-
-            Date createdDateFromToken = jwtTokenUtil.getCreatedDateFromToken(authToken);
-
-            System.out.println("createdDateFromToken "+createdDateFromToken);
-
 
             logger.info("checking authentication " + username);
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -78,6 +65,8 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     logger.info("authenticated user " + username + ", setting security context");
                     SecurityContextHolder.getContext().setAuthentication(authentication);
+                    // 刷新token
+                    authService.refresh(authHeader);
                 }
             }
         }

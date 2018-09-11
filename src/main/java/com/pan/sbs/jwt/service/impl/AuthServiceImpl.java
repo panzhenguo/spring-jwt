@@ -81,8 +81,17 @@ public class AuthServiceImpl implements AuthService {
         final String token = oldToken.substring(tokenHead.length());
         String username = jwtTokenUtil.getUsernameFromToken(token);
         SysUser user = (SysUser) userDetailsService.loadUserByUsername(username);
+
+
+
         if (jwtTokenUtil.canTokenBeRefreshed(token, user.getLastPasswordResetDate())){
-            return jwtTokenUtil.refreshToken(token);
+
+
+            String s = jwtTokenUtil.refreshToken(token);
+            System.out.println(token);
+            System.out.println(s);
+
+            return s;
         }
         return null;
     }

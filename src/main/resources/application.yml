@@ -35,7 +35,7 @@ logging:
 jwt:
   header: Authorization
   secret: mySecret
-  expiration: 10
+  expiration: 5
   tokenHead: Bearer
   route:
     authentication:

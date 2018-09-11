@@ -28,7 +28,7 @@ public class JwtTokenUtil implements Serializable {
     private Long expiration;
 
     /**
-     * 更具token 获取用户名
+     *  根据 token 获取用户名
      * @param token
      * @return
      */
@@ -84,7 +84,7 @@ public class JwtTokenUtil implements Serializable {
     }
 
     private Date generateExpirationDate() {
-        return new Date(System.currentTimeMillis() + expiration * 1000);
+        return new Date(System.currentTimeMillis() + expiration * 1000*60);
     }
 
     private Boolean isTokenExpired(String token) {
