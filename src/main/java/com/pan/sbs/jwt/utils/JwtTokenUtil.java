@@ -44,7 +44,7 @@ public class JwtTokenUtil implements Serializable {
     }
 
     /**
-     * 根据token 获取生成时间
+     * 根据token 获取token 生成时间
      * @param token
      * @return
      */
@@ -59,6 +59,11 @@ public class JwtTokenUtil implements Serializable {
         return created;
     }
 
+    /**
+     * 获取过期时间
+     * @param token
+     * @return
+     */
     public Date getExpirationDateFromToken(String token) {
         Date expiration;
         try {
@@ -96,6 +101,11 @@ public class JwtTokenUtil implements Serializable {
         return (lastPasswordReset != null && created.before(lastPasswordReset));
     }
 
+    /**
+     * 根据userDetails 创建令牌
+     * @param userDetails
+     * @return
+     */
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         claims.put(CLAIM_KEY_USERNAME, userDetails.getUsername());
@@ -103,7 +113,11 @@ public class JwtTokenUtil implements Serializable {
         return generateToken(claims);
     }
 
-
+    /**
+     * 根据map 创建令牌
+     * @param claims
+     * @return 返回创建后的令牌
+     */
     String generateToken(Map<String, Object> claims) {
         return Jwts.builder()
                 .setClaims(claims)
@@ -117,6 +131,11 @@ public class JwtTokenUtil implements Serializable {
         return !isCreatedBeforeLastPasswordReset(created, lastPasswordReset) && !isTokenExpired(token);
     }
 
+    /**
+     * 根据旧令牌 创建新令牌
+     * @param token old 令牌
+     * @return 返回新令牌
+     */
     public String refreshToken(String token) {
         String refreshedToken;
         try {
@@ -129,6 +148,12 @@ public class JwtTokenUtil implements Serializable {
         return refreshedToken;
     }
 
+    /**
+     * 验证令牌
+     * @param token 需要验证的令牌
+     * @param userDetails 需要整的账号信息
+     * @return 真假
+     */
     public Boolean validateToken(String token, UserDetails userDetails) {
         SysUser user = (SysUser) userDetails;
         final String username = getUsernameFromToken(token);
